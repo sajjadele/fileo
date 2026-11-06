@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">فایلو</string>
+    <string name="home_tagline">انتقال فایل، ساده و امن</string>
+
+    <string name="send_title">ارسال فایل</string>
+    <string name="receive_title">دریافت فایل</string>
+    <string name="send_desc">فایل‌ها را به دستگاه‌های نزدیک بفرستید</string>
+    <string name="receive_desc">آماده دریافت از دستگاه‌های نزدیک</string>
+
+    <string name="send_soon_desc">انتخاب فایل و کشف دستگاه‌ها در بیلد بعدی فعال می‌شود</string>
+    <string name="receive_soon_desc">کد QR اتصال در بیلد بعدی فعال می‌شود</string>
+
+    <string name="nav_home">خانه</string>
+    <string name="nav_history">تاریخچه</string>
+    <string name="nav_settings">تنظیمات</string>
+
+    <string name="history_title">تاریخچه</string>
+    <string name="history_empty_title">هنوز انتقالی نداشته‌اید</string>
+    <string name="history_empty_desc">انتقال‌های شما اینجا نمایش داده می‌شود</string>
+
+    <string name="settings_title">تنظیمات</string>
+    <string name="settings_device_name">نام دستگاه</string>
+
+    <string name="back_desc">بازگشت</string>
+</resources>
