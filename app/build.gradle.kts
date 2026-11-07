@@ -45,6 +45,8 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            // فایل‌های OSGI تکراری داخل jarهای BouncyCastle
+            excludes += "/META-INF/versions/9/OSGI-INF/MANIFEST.MF"
         }
     }
 }
