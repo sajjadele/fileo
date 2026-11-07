@@ -75,7 +75,7 @@ class TransferServer(
         serverSocket = null
     }
 
-    private fun handleConnection(socket: SSLSocket) {
+    private suspend fun handleConnection(socket: SSLSocket) {
         var session: TransferSession? = null
         try {
             socket.soTimeout = SOCKET_TIMEOUT_MS

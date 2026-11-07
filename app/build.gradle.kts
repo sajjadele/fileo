@@ -71,6 +71,7 @@ dependencies {
 
     // تولید گواهی self-signed برای TLS
     implementation(libs.bouncycastle)
+    implementation(libs.bouncycastle.pkix)
 
     testImplementation(libs.junit)
 }

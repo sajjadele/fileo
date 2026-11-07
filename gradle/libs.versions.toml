@@ -9,6 +9,7 @@ navigationCompose = "2.8.5"
 kotlinxSerialization = "1.7.3"
 kotlinxCoroutines = "1.9.0"
 bouncyCastle = "1.78.1"
+bouncyCastlePkix = "1.78.1"
 junit = "4.13.2"
 
 [libraries]
@@ -27,6 +28,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 bouncycastle = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncyCastle" }
+bouncycastle-pkix = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncyCastlePkix" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 [plugins]
