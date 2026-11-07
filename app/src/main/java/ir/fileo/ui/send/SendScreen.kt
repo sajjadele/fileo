@@ -149,6 +149,7 @@ fun SendScreen(onBack: () -> Unit) {
                     devices = devices,
                     scanning = discoveryState is DiscoveryState.Scanning,
                     onDeviceTapped = ::onDeviceTapped,
+                    modifier = Modifier.weight(1f),
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -207,72 +208,73 @@ private fun DeviceListSection(
     devices: List<DiscoveredDevice>,
     scanning: Boolean,
     onDeviceTapped: (DiscoveredDevice) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        if (scanning) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(18.dp),
-                strokeWidth = 2.dp,
-            )
-        }
-        Text(
-            text = if (scanning) stringResource(R.string.send_scanning) else "",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        if (devices.isNotEmpty()) {
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = stringResource(R.string.send_found_count, devices.size),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-            )
-        }
-    }
-
-    if (devices.isEmpty()) {
-        Column(
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+                .padding(vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Icon(
-                imageVector = Icons.Outlined.Wifi,
-                contentDescription = null,
-                modifier = Modifier.size(72.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+            if (scanning) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp),
+                    strokeWidth = 2.dp,
+                )
+            }
             Text(
-                text = stringResource(R.string.send_empty_title),
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = stringResource(R.string.send_empty_hint),
+                text = if (scanning) stringResource(R.string.send_scanning) else "",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-        }
-    } else {
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            items(devices, key = { it.deviceId }) { device ->
-                DeviceCard(
-                    device = device,
-                    onClick = { onDeviceTapped(device) },
-                    modifier = Modifier.animateItem(),
+            if (devices.isNotEmpty()) {
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = stringResource(R.string.send_found_count, devices.size),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
                 )
+            }
+        }
+
+        if (devices.isEmpty()) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Wifi,
+                    contentDescription = null,
+                    modifier = Modifier.size(72.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = stringResource(R.string.send_empty_title),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.send_empty_hint),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                items(devices, key = { it.deviceId }) { device ->
+                    DeviceCard(
+                        device = device,
+                        onClick = { onDeviceTapped(device) },
+                        modifier = Modifier.animateItem(),
+                    )
+                }
             }
         }
     }
