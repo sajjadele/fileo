@@ -3,6 +3,7 @@ package ir.fileo.di
 import android.content.Context
 import android.os.Build
 import ir.fileo.core.discovery.DiscoveryEngine
+import ir.fileo.core.hotspot.HotspotManager
 import ir.fileo.core.security.CertManager
 import ir.fileo.core.storage.AndroidIncomingSinkFactory
 import ir.fileo.core.transfer.IncomingSinkFactory
@@ -50,6 +51,8 @@ class AppContainer(appContext: Context) {
     }
 
     val certManager: CertManager by lazy { CertManager(appContext) }
+
+    val hotspotManager: HotspotManager by lazy { HotspotManager(appContext) }
 
     private val incomingSinkFactory: IncomingSinkFactory by lazy { AndroidIncomingSinkFactory(appContext) }
 

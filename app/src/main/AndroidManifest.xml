@@ -10,9 +10,11 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- کشف دستگاه‌های نزدیک -->
+    <!-- کشف دستگاه‌های نزدیک و هات‌اسپات محلی -->
     <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES"
         android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
     <!-- اسکن QR -->
     <uses-permission android:name="android.permission.CAMERA" />
