@@ -212,6 +212,7 @@ class TransferServer(
                 if (!actualSha.equals(fileEnd.sha256, ignoreCase = true)) {
                     throw IOException("checksum mismatch: ${file.name}")
                 }
+                runCatching { sink.onCompleted() }
                 savedNames += sink.displayName
             } catch (e: Exception) {
                 runCatching { sink.onAborted() }

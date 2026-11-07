@@ -14,7 +14,37 @@
     <string name="send_empty_hint">فایلو را روی دستگاه دیگر هم باز کن و مطمئن شو هر دو به یک شبکهٔ Wi-Fi وصل هستید</string>
     <string name="send_connect_soon">اتصال و ارسال در بیلد بعدی فعال می‌شود</string>
 
-    <string name="receive_soon_desc">کد QR اتصال در بیلد بعدی فعال می‌شود</string>
+    <string name="send_pick_files">انتخاب فایل‌ها</string>
+    <string name="send_picked_count">%1$d فایل انتخاب شد</string>
+    <string name="send_clear_files">پاک کردن</string>
+    <string name="send_pick_hint">فایل‌ها را انتخاب کن، بعد روی دستگاه بزن</string>
+    <string name="send_first_pick_files">اول فایل انتخاب کن</string>
+    <string name="send_transfer_in_background">می‌توانی این صفحه را ببندی؛ انتقال ادامه دارد.</string>
+
+    <string name="transfer_waiting_approval">در انتظار پذیرش…</string>
+    <string name="transfer_active">در حال انتقال</string>
+    <string name="transfer_completed">انتقال کامل شد</string>
+    <string name="transfer_rejected">رد شد</string>
+    <string name="transfer_failed">انتقال ناموفق بود</string>
+    <string name="transfer_cancelled">لغو شد</string>
+    <string name="transfer_file_position">فایل %1$d از %2$d</string>
+    <string name="transfer_cancel">لغو انتقال</string>
+    <string name="transfer_close">بستن</string>
+
+    <string name="receive_offer_from">از %1$s</string>
+    <string name="receive_files_count">%1$d فایل · %2$s</string>
+    <string name="receive_more_files">و %1$d فایل دیگر…</string>
+    <string name="receive_accept">پذیرش</string>
+    <string name="receive_reject">رد</string>
+    <string name="receive_saved_to">ذخیره شد: %1$s</string>
+    <string name="receive_waiting_title">آماده دریافت</string>
+    <string name="receive_waiting_hint">از صفحهٔ «ارسال» در دستگاه مقابل، این دستگاه را انتخاب کن</string>
+
+    <string name="notif_channel_name">انتقال فایل</string>
+    <string name="notif_channel_desc">نمایش پیشرفت انتقال فایل‌ها</string>
+    <string name="notif_transfer_title">انتقال فایلو</string>
+    <string name="notif_transfer_active">انتقال در جریان است…</string>
+    <string name="notif_transfer_progress">فایل %1$d از %2$d</string>
 
     <string name="nav_home">خانه</string>
     <string name="nav_history">تاریخچه</string>

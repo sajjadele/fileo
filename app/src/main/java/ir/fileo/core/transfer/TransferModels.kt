@@ -37,8 +37,11 @@ interface IncomingSink {
 
     fun outputStream(): OutputStream
 
+    /** انتشار نهایی ورودی (مثلاً IS_PENDING=0 در MediaStore) — بعد از تأیید checksum */
+    fun onCompleted() {}
+
     /** پاکسازی ورودی نیمه‌تمر در خطا/لغو */
-    fun onAborted()
+    fun onAborted() {}
 }
 
 fun interface IncomingSinkFactory {

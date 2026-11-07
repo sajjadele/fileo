@@ -14,7 +14,37 @@
     <string name="send_empty_hint">Open Fileo on the other device too and make sure both are on the same Wi-Fi network</string>
     <string name="send_connect_soon">Connecting and sending arrive in the next build</string>
 
-    <string name="receive_soon_desc">Connection QR code arrives in the next build</string>
+    <string name="send_pick_files">Pick files</string>
+    <string name="send_picked_count">%1$d files selected</string>
+    <string name="send_clear_files">Clear</string>
+    <string name="send_pick_hint">Pick files first, then tap a device</string>
+    <string name="send_first_pick_files">Pick files first</string>
+    <string name="send_transfer_in_background">You can leave this screen; the transfer continues.</string>
+
+    <string name="transfer_waiting_approval">Waiting for approval…</string>
+    <string name="transfer_active">Transferring</string>
+    <string name="transfer_completed">Transfer completed</string>
+    <string name="transfer_rejected">Rejected</string>
+    <string name="transfer_failed">Transfer failed</string>
+    <string name="transfer_cancelled">Cancelled</string>
+    <string name="transfer_file_position">File %1$d of %2$d</string>
+    <string name="transfer_cancel">Cancel transfer</string>
+    <string name="transfer_close">Close</string>
+
+    <string name="receive_offer_from">From %1$s</string>
+    <string name="receive_files_count">%1$d files · %2$s</string>
+    <string name="receive_more_files">and %1$d more…</string>
+    <string name="receive_accept">Accept</string>
+    <string name="receive_reject">Reject</string>
+    <string name="receive_saved_to">Saved to: %1$s</string>
+    <string name="receive_waiting_title">Ready to receive</string>
+    <string name="receive_waiting_hint">Pick this device from the other phone\'s \"Send\" screen</string>
+
+    <string name="notif_channel_name">File transfers</string>
+    <string name="notif_channel_desc">Shows file transfer progress</string>
+    <string name="notif_transfer_title">Fileo transfer</string>
+    <string name="notif_transfer_active">Transfer in progress…</string>
+    <string name="notif_transfer_progress">File %1$d of %2$d</string>
 
     <string name="nav_home">Home</string>
     <string name="nav_history">History</string>
