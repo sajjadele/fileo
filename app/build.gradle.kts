@@ -69,5 +69,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
 
+    // تولید گواهی self-signed برای TLS
+    implementation(libs.bouncycastle)
+
     testImplementation(libs.junit)
 }

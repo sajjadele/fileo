@@ -3,9 +3,14 @@ package ir.fileo.di
 import android.content.Context
 import android.os.Build
 import ir.fileo.core.discovery.DiscoveryEngine
+import ir.fileo.core.security.CertManager
+import ir.fileo.core.storage.AndroidIncomingSinkFactory
+import ir.fileo.core.transfer.IncomingSinkFactory
+import ir.fileo.core.transfer.TransferEngine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 /**
@@ -42,6 +47,27 @@ class AppContainer(appContext: Context) {
             selfModel = model,
             tcpPort = TRANSFER_PORT,
         )
+    }
+
+    val certManager: CertManager by lazy { CertManager(appContext) }
+
+    private val incomingSinkFactory: IncomingSinkFactory by lazy { AndroidIncomingSinkFactory(appContext) }
+
+    /** موتور انتقال — سرور دریافت در همین گرم‌سازی روی رشتهٔ پس‌زمینه بالا می‌آید */
+    val transferEngine: TransferEngine by lazy {
+        TransferEngine(
+            identity = certManager.identity(),
+            scope = applicationScope,
+            sinkFactory = incomingSinkFactory,
+            selfDeviceId = deviceId,
+            selfDeviceName = deviceName,
+            selfModel = model,
+        )
+    }
+
+    init {
+        // گرم‌سازی هویت TLS و سرور دریافت خارج از رشتهٔ اصلی
+        applicationScope.launch { transferEngine.startServer() }
     }
 
     companion object {

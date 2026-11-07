@@ -18,3 +18,7 @@
 -keepclasseswithmembers class ir.fileo.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
+
+# --- BouncyCastle (تولید گواهی self-signed) ---
+-dontwarn org.bouncycastle.**
+-keep class org.bouncycastle.** { *; }
