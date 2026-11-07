@@ -94,7 +94,9 @@ class TransferIntegrationTest {
     @Test
     fun `full transfer of multiple files over tls succeeds with correct content`() {
         val store = ConcurrentHashMap<String, ByteArray>()
+        val receiverSession = AtomicReference<TransferSession?>(null)
         val server = startServer(memorySinkFactory(store)) { session ->
+            receiverSession.set(session)
             scope.launch {
                 delay(200) // شبیه‌سازی تصمیم کاربر
                 session.accept()
@@ -118,7 +120,11 @@ class TransferIntegrationTest {
         assertTrue("expected Completed but was ${session.state.value}", finalState is TransferState.Completed)
         assertTrue(data1.contentEquals(store["alpha.bin"]))
         assertTrue(data2.contentEquals(store["beta.bin"]))
-        assertEquals(listOf("alpha.bin", "beta.bin"), finalState.let { (it as TransferState.Completed).savedNames })
+
+        // سمت گیرنده باید نام فایل‌های ذخیره‌شده را داشته باشد
+        val receiverState = receiverSession.get()?.state?.value
+        assertTrue("expected receiver Completed but was $receiverState", receiverState is TransferState.Completed)
+        assertEquals(listOf("alpha.bin", "beta.bin"), (receiverState as TransferState.Completed).savedNames)
 
         server.stop()
     }
