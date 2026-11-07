@@ -50,6 +50,30 @@
     <string name="scan_permission_needed">Camera access is needed to scan</string>
     <string name="scan_grant_camera">Grant access</string>
 
+    <string name="send_scan_qr">Scan QR</string>
+    <string name="connect_waiting_for">Waiting to connect to %1$s…</string>
+    <string name="connect_manual_title">Manual connection</string>
+    <string name="connect_manual_hint">If auto-connect fails, join this network in Wi-Fi settings:</string>
+    <string name="connect_open_settings">Open Wi-Fi settings</string>
+    <string name="connect_copy">Copy</string>
+    <string name="connect_copied">Copied</string>
+    <string name="connect_cancel">Cancel</string>
+    <string name="connect_invalid_qr">This QR is not a Fileo code</string>
+    <string name="connect_self_qr">This is this phone\'s own QR!</string>
+
+    <string name="receive_pairing_qr">Show QR</string>
+    <string name="receive_hotspot_create">No Wi-Fi? Connect</string>
+    <string name="receive_hotspot_starting">Creating hotspot…</string>
+    <string name="receive_hotspot_active">Hotspot is active</string>
+    <string name="receive_qr_active">Connection QR</string>
+    <string name="receive_stop_connection">End</string>
+    <string name="receive_qr_hint">On the other phone: Send → \"Scan QR\"</string>
+    <string name="receive_qr_alt">Connection QR code</string>
+    <string name="receive_ssid_label">Network name</string>
+    <string name="receive_pass_label">Password</string>
+    <string name="receive_hotspot_note">Or join this network manually on the other phone</string>
+    <string name="receive_security_code">Security code</string>
+
     <string name="nav_home">Home</string>
     <string name="nav_history">History</string>
     <string name="nav_settings">Settings</string>

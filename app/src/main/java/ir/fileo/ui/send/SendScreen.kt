@@ -1,10 +1,17 @@
 package ir.fileo.ui.send
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,20 +21,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.AttachFile
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material.icons.outlined.Smartphone
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -36,10 +46,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -51,6 +64,7 @@ import ir.fileo.R
 import ir.fileo.core.discovery.DiscoveredDevice
 import ir.fileo.core.discovery.DiscoveryState
 import ir.fileo.service.TransferService
+import ir.fileo.ui.connect.QrScannerScreen
 import ir.fileo.ui.transfer.TransferProgressCard
 import ir.fileo.ui.transfer.formatBytes
 import kotlinx.coroutines.launch
@@ -59,15 +73,36 @@ import kotlinx.coroutines.launch
 @Composable
 fun SendScreen(onBack: () -> Unit) {
     val viewModel: SendViewModel = viewModel(factory = SendViewModel.Factory)
+    val context = LocalContext.current
+
+    var showScanner by remember { mutableStateOf(false) }
+    if (showScanner) {
+        QrScannerScreen(
+            onResult = { raw ->
+                showScanner = false
+                viewModel.onQrScanned(raw)
+            },
+            onClose = { showScanner = false },
+        )
+        return
+    }
+
     val devices by viewModel.devices.collectAsState()
     val discoveryState by viewModel.discoveryState.collectAsState()
     val pickedUris by viewModel.pickedUris.collectAsState()
     val session by viewModel.session.collectAsState()
+    val connectionAttempt by viewModel.connectionAttempt.collectAsState()
+    val message by viewModel.message.collectAsState()
 
-    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val pickFirstMessage = stringResource(R.string.send_first_pick_files)
+
+    LaunchedEffect(message) {
+        message?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.consumeMessage()
+        }
+    }
 
     // کشف دستگاه‌ها فقط تا وقتی این صفحه باز است
     DisposableEffect(Unit) {
@@ -79,15 +114,6 @@ fun SendScreen(onBack: () -> Unit) {
         ActivityResultContracts.OpenMultipleDocuments(),
     ) { uris ->
         if (uris.isNotEmpty()) viewModel.onFilesPicked(uris)
-    }
-
-    fun onDeviceTapped(device: DiscoveredDevice) {
-        if (pickedUris.isEmpty()) {
-            scope.launch { snackbarHostState.showSnackbar(pickFirstMessage) }
-            return
-        }
-        viewModel.offerTo(device, context.contentResolver)
-        TransferService.start(context)
     }
 
     Scaffold(
@@ -129,11 +155,25 @@ fun SendScreen(onBack: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             } else {
-                // کارت سشن قبلی (پایان‌یافته) — تا وقتی کاربر نبندد
                 session?.let {
                     TransferProgressCard(
                         session = it,
                         onDismiss = { viewModel.dismissSession() },
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+
+                // اتصال از طریق QR در جریان است؟
+                connectionAttempt?.let { attempt ->
+                    ConnectionAttemptCard(
+                        deviceName = attempt.deviceName,
+                        ssid = attempt.hotspot?.ssid,
+                        passphrase = attempt.hotspot?.passphrase,
+                        onCancel = { viewModel.cancelConnectionAttempt() },
+                        onCopy = { value ->
+                            copyToClipboard(context, value)
+                            scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.connect_copied)) }
+                        },
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
@@ -143,12 +183,16 @@ fun SendScreen(onBack: () -> Unit) {
                     pickedBytes = pickedUris.sumOf { it.byteSize(context) },
                     onPick = { pickerLauncher.launch(arrayOf("*/*")) },
                     onClear = { viewModel.onFilesPicked(emptyList()) },
+                    onScanQr = { showScanner = true },
                 )
 
                 DeviceListSection(
                     devices = devices,
                     scanning = discoveryState is DiscoveryState.Scanning,
-                    onDeviceTapped = ::onDeviceTapped,
+                    onDeviceTapped = { device ->
+                        viewModel.offerTo(device)
+                        TransferService.start(context)
+                    },
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -157,9 +201,104 @@ fun SendScreen(onBack: () -> Unit) {
     }
 }
 
+private fun copyToClipboard(context: Context, value: String) {
+    runCatching {
+        val clipboard = context.getSystemService(ClipboardManager::class.java)
+        clipboard?.setPrimaryClip(ClipData.newPlainText("fileo", value))
+    }
+}
+
 private fun android.net.Uri.byteSize(context: Context): Long = runCatching {
     context.contentResolver.openAssetFileDescriptor(this, "r")?.use { it.length } ?: 0L
 }.getOrDefault(0L)
+
+@Composable
+private fun ConnectionAttemptCard(
+    deviceName: String,
+    ssid: String?,
+    passphrase: String?,
+    onCancel: () -> Unit,
+    onCopy: (String) -> Unit,
+) {
+    val context = LocalContext.current
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                Text(
+                    text = stringResource(R.string.connect_waiting_for, deviceName),
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.weight(1f),
+                )
+                IconButton(onClick = onCancel) {
+                    Icon(
+                        imageVector = Icons.Outlined.Close,
+                        contentDescription = stringResource(R.string.connect_cancel),
+                    )
+                }
+            }
+
+            // اگر QR شامل هات‌اسپات است — مسیر اتصال دستی هم در دسترس باشد
+            if (ssid != null && passphrase != null) {
+                HorizontalDivider()
+                Text(
+                    text = stringResource(R.string.connect_manual_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    text = stringResource(R.string.connect_manual_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                CredentialRow(label = "SSID", value = ssid, onCopy = onCopy)
+                CredentialRow(label = stringResource(R.string.receive_pass_label), value = passphrase, onCopy = onCopy)
+                OutlinedButton(
+                    onClick = {
+                        runCatching {
+                            context.startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
+                        }
+                    },
+                ) {
+                    Text(stringResource(R.string.connect_open_settings))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CredentialRow(label: String, value: String, onCopy: (String) -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            text = "$label:",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.weight(1f),
+        )
+        TextButton(onClick = { onCopy(value) }, contentPadding = PaddingValues(0.dp)) {
+            Text(stringResource(R.string.connect_copy))
+        }
+    }
+}
 
 @Composable
 private fun FilePickerSection(
@@ -167,6 +306,7 @@ private fun FilePickerSection(
     pickedBytes: Long,
     onPick: () -> Unit,
     onClear: () -> Unit,
+    onScanQr: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -189,8 +329,19 @@ private fun FilePickerSection(
                         " · " + formatBytes(pickedBytes),
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                TextButton(onClick = onClear, contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)) {
-                    Text(stringResource(R.string.send_clear_files))
+                Row {
+                    TextButton(onClick = onClear, contentPadding = PaddingValues(0.dp)) {
+                        Text(stringResource(R.string.send_clear_files))
+                    }
+                    TextButton(onClick = onScanQr, contentPadding = PaddingValues(horizontal = 8.dp)) {
+                        Icon(
+                            imageVector = Icons.Outlined.QrCodeScanner,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                        )
+                        Spacer(modifier = Modifier.size(4.dp))
+                        Text(stringResource(R.string.send_scan_qr))
+                    }
                 }
             } else {
                 Text(
@@ -297,7 +448,7 @@ private fun DeviceCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            androidx.compose.foundation.layout.Box(
+            Box(
                 modifier = Modifier
                     .size(44.dp)
                     .background(

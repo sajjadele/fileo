@@ -50,6 +50,30 @@
     <string name="scan_permission_needed">برای اسکن، دسترسی دوربین لازم است</string>
     <string name="scan_grant_camera">دادن دسترسی</string>
 
+    <string name="send_scan_qr">اسکن QR</string>
+    <string name="connect_waiting_for">در انتظار اتصال به %1$s…</string>
+    <string name="connect_manual_title">اتصال دستی</string>
+    <string name="connect_manual_hint">اگر خودکار وصل نشد، در تنظیمات وای‌فای به این شبکه وصل شو:</string>
+    <string name="connect_open_settings">باز کردن تنظیمات وای‌فای</string>
+    <string name="connect_copy">کپی</string>
+    <string name="connect_copied">کپی شد</string>
+    <string name="connect_cancel">انصراف</string>
+    <string name="connect_invalid_qr">این QR مال فایلو نیست</string>
+    <string name="connect_self_qr">این QR همین گوشی است!</string>
+
+    <string name="receive_pairing_qr">نمایش QR</string>
+    <string name="receive_hotspot_create">اتصال بدون وای‌فای</string>
+    <string name="receive_hotspot_starting">در حال ساخت هات‌اسپات…</string>
+    <string name="receive_hotspot_active">هات‌اسپات فعال است</string>
+    <string name="receive_qr_active">QR اتصال</string>
+    <string name="receive_stop_connection">پایان</string>
+    <string name="receive_qr_hint">در گوشی دیگر، صفحهٔ ارسال ← «اسکن QR» را باز کن</string>
+    <string name="receive_qr_alt">کد QR اتصال</string>
+    <string name="receive_ssid_label">نام شبکه</string>
+    <string name="receive_pass_label">رمز</string>
+    <string name="receive_hotspot_note">یا در گوشی مقابل، وای‌فای را دستی به این شبکه وصل کن</string>
+    <string name="receive_security_code">کد امنیتی</string>
+
     <string name="nav_home">خانه</string>
     <string name="nav_history">تاریخچه</string>
     <string name="nav_settings">تنظیمات</string>

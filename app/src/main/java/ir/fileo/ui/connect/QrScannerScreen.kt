@@ -121,6 +121,8 @@ private fun CameraPreviewWithAnalyzer(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val executor = remember { Executors.newSingleThreadExecutor() }
+    // هر QR فقط یک‌بار تحویل داده شود (فریم‌ها پشت‌سرهم می‌آیند)
+    val delivered = remember { java.util.concurrent.atomic.AtomicBoolean(false) }
 
     AndroidView(
         modifier = modifier,
@@ -135,7 +137,9 @@ private fun CameraPreviewWithAnalyzer(
                 val analysis = ImageAnalysis.Builder()
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build()
-                analysis.setAnalyzer(executor, QrFrameAnalyzer(onQr))
+                analysis.setAnalyzer(executor, QrFrameAnalyzer { content ->
+                    if (delivered.compareAndSet(false, true)) onQr(content)
+                })
                 provider.unbindAll()
                 provider.bindToLifecycle(lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, preview, analysis)
             }, ContextCompat.getMainExecutor(context))
