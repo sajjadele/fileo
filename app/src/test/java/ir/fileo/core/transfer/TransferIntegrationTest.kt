@@ -60,7 +60,9 @@ class TransferIntegrationTest {
                     }
                 }
 
-                override fun onAborted() = store.remove(name)
+                override fun onAborted() {
+                    store.remove(name)
+                }
             }
         }
 
