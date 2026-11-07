@@ -8,7 +8,12 @@
     <string name="send_desc">فایل‌ها را به دستگاه‌های نزدیک بفرستید</string>
     <string name="receive_desc">آماده دریافت از دستگاه‌های نزدیک</string>
 
-    <string name="send_soon_desc">انتخاب فایل و کشف دستگاه‌ها در بیلد بعدی فعال می‌شود</string>
+    <string name="send_scanning">در جستجوی دستگاه‌های نزدیک…</string>
+    <string name="send_found_count">%1$d دستگاه پیدا شد</string>
+    <string name="send_empty_title">هنوز دستگاهی پیدا نشد</string>
+    <string name="send_empty_hint">فایلو را روی دستگاه دیگر هم باز کن و مطمئن شو هر دو به یک شبکهٔ Wi-Fi وصل هستید</string>
+    <string name="send_connect_soon">اتصال و ارسال در بیلد بعدی فعال می‌شود</string>
+
     <string name="receive_soon_desc">کد QR اتصال در بیلد بعدی فعال می‌شود</string>
 
     <string name="nav_home">خانه</string>

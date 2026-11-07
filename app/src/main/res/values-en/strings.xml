@@ -8,7 +8,12 @@
     <string name="send_desc">Send files to nearby devices</string>
     <string name="receive_desc">Ready to receive from nearby devices</string>
 
-    <string name="send_soon_desc">File picking and device discovery arrive in the next build</string>
+    <string name="send_scanning">Searching for nearby devices…</string>
+    <string name="send_found_count">%1$d devices found</string>
+    <string name="send_empty_title">No devices found yet</string>
+    <string name="send_empty_hint">Open Fileo on the other device too and make sure both are on the same Wi-Fi network</string>
+    <string name="send_connect_soon">Connecting and sending arrive in the next build</string>
+
     <string name="receive_soon_desc">Connection QR code arrives in the next build</string>
 
     <string name="nav_home">Home</string>
