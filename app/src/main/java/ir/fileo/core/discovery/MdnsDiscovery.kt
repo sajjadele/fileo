@@ -138,7 +138,7 @@ class MdnsDiscovery(
     private suspend fun resolve(info: NsdServiceInfo): DiscoveredDevice? =
         withTimeoutOrNull(RESOLVE_TIMEOUT_MS) {
             suspendCancellableCoroutine { continuation ->
-                nsdManager.resolveService(info, object : NsdManager.ResolveListener() {
+                nsdManager.resolveService(info, object : NsdManager.ResolveListener {
                     override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
                         if (continuation.isActive) continuation.resume(toDevice(serviceInfo))
                     }

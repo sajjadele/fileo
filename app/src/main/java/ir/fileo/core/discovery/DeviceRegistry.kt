@@ -34,7 +34,8 @@ class DeviceRegistry(private val now: () -> Long = System::currentTimeMillis) {
         } else {
             device
         }
-        entries[device.deviceId] = Entry(merged, existing.aliases + (alias ?: emptySet<String>()))
+        val updatedAliases = alias?.let { existing.aliases + it } ?: existing.aliases
+        entries[device.deviceId] = Entry(merged, updatedAliases)
     }
 
     /** حذف دستگاه با هر شناسه‌ای که داشته باشد (deviceId یا alias) — وقتی mDNS سرویس را گم می‌کند */
