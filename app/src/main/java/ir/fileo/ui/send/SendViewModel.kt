@@ -3,6 +3,7 @@ package ir.fileo.ui.send
 import android.content.Context
 import android.net.Uri
 import android.net.wifi.WifiManager
+import android.net.wifi.WifiNetworkSuggestion
 import android.os.Build
 import android.provider.OpenableColumns
 import androidx.lifecycle.ViewModel
