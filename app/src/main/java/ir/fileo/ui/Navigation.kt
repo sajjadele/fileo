@@ -1,9 +1,9 @@
 package ir.fileo.ui
 
+/** مسیرهای ناوبری — تب‌ها داخل Pager هستند، پس فقط مقصدهای تمام‌صفحه مسیر دارند */
 object Routes {
-    const val HOME = "home"
+    /** مقصد ریشه — شامل سه تب اصلی (HorizontalPager) */
+    const val TABS = "tabs"
     const val SEND = "send"
     const val RECEIVE = "receive"
-    const val HISTORY = "history"
-    const val SETTINGS = "settings"
 }

@@ -11,13 +11,6 @@ import androidx.navigation.compose.rememberNavController
 import ir.fileo.ui.receive.ReceiveScreen
 import ir.fileo.ui.send.SendScreen
 
-object Routes {
-    /** مقصد ریشه — شامل سه تب اصلی (HorizontalPager) */
-    const val TABS = "tabs"
-    const val SEND = "send"
-    const val RECEIVE = "receive"
-}
-
 @Composable
 fun FileoRoot() {
     val navController = rememberNavController()
