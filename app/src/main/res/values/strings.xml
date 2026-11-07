@@ -46,6 +46,10 @@
     <string name="notif_transfer_active">انتقال در جریان است…</string>
     <string name="notif_transfer_progress">فایل %1$d از %2$d</string>
 
+    <string name="scan_title">اسکن QR اتصال</string>
+    <string name="scan_permission_needed">برای اسکن، دسترسی دوربین لازم است</string>
+    <string name="scan_grant_camera">دادن دسترسی</string>
+
     <string name="nav_home">خانه</string>
     <string name="nav_history">تاریخچه</string>
     <string name="nav_settings">تنظیمات</string>

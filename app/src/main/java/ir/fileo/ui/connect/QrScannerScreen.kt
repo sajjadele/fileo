@@ -159,17 +159,30 @@ class QrFrameAnalyzer(private val onQr: (String) -> Unit) : ImageAnalysis.Analyz
     override fun analyze(image: ImageProxy) {
         try {
             val plane = image.planes[0]
-            val bytes = ByteArray(plane.buffer.remaining())
-            plane.buffer.get(bytes)
+            val raw = ByteArray(plane.buffer.remaining())
+            plane.buffer.get(raw)
+            val width = image.width
+            val height = image.height
+
+            // ZXing انتظار دادهٔ فشرده (بدون padding سطرها) دارد — rowStride ممکن است بزرگ‌تر باشد
+            val packed = if (plane.rowStride == width) {
+                raw
+            } else {
+                ByteArray(width * height).also { out ->
+                    for (row in 0 until height) {
+                        System.arraycopy(raw, row * plane.rowStride, out, row * width, width)
+                    }
+                }
+            }
+
             val source = com.google.zxing.PlanarYUVLuminanceSource(
-                bytes,
-                plane.rowStride,
-                image.width,
-                image.height,
+                packed,
+                width,
+                height,
                 0,
                 0,
-                image.width,
-                image.height,
+                width,
+                height,
                 false,
             )
             val bitmap = com.google.zxing.BinaryBitmap(com.google.zxing.common.HybridBinarizer(source))
