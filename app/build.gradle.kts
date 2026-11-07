@@ -71,6 +71,9 @@ dependencies {
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
+
+    // تولید و خواندن QR — بدون وابستگی به سرویس‌های گوگل
+    implementation(libs.zxing.core)
     debugImplementation(libs.androidx.ui.tooling)
 
     // Kotlinx
