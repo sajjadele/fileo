@@ -26,31 +26,60 @@ class HotspotManager(private val context: Context) {
     /** هات‌اسپات را بالا می‌آورد و مشخصاتش را برمی‌گرداند — خطا با HotspotException */
     suspend fun start(): HotspotInfo {
         stop()
+
+        // اندروید ۹ تا ۱۲: سرویس موقعیت مکانی باید روشن باشد (شرط سیستم‌عامل)
+        if (Build.VERSION.SDK_INT in 29..32 && !isLocationServiceOn()) {
+            throw HotspotException(
+                "سرویس موقعیت مکانی گوشی خاموش است — برای ساخت هات‌اسپات باید روشن شود",
+            )
+        }
+
         val wifi = context.getSystemService(WifiManager::class.java)
             ?: throw HotspotException("Wi-Fi service unavailable")
 
-        val newReservation = suspendCancellableCoroutine { continuation ->
-            wifi.startLocalOnlyHotspot(
-                object : WifiManager.LocalOnlyHotspotCallback() {
-                    override fun onStarted(res: WifiManager.LocalOnlyHotspotReservation) {
-                        if (continuation.isActive) continuation.resume(res)
-                    }
-
-                    override fun onFailed(reason: Int) {
-                        if (continuation.isActive) {
-                            continuation.cancel(HotspotException(failureMessage(reason)))
+        val newReservation = try {
+            suspendCancellableCoroutine { continuation ->
+                wifi.startLocalOnlyHotspot(
+                    object : WifiManager.LocalOnlyHotspotCallback() {
+                        override fun onStarted(res: WifiManager.LocalOnlyHotspotReservation) {
+                            if (continuation.isActive) continuation.resume(res)
                         }
-                    }
-                },
-                Handler(Looper.getMainLooper()),
-            )
+
+                        override fun onFailed(reason: Int) {
+                            if (continuation.isActive) {
+                                continuation.cancel(HotspotException(failureMessage(reason)))
+                            }
+                        }
+                    },
+                    Handler(Looper.getMainLooper()),
+                )
+            }
+        } catch (e: HotspotException) {
+            throw e
+        } catch (e: SecurityException) {
+            // مجوز runtime داده نشده (اندروید ۱۳+: NEARBY_WIFI_DEVICES، قبل‌تر: موقعیت مکانی)
+            throw HotspotException(securityMessage())
         }
+
         reservation = newReservation
         return extractInfo(newReservation) ?: run {
             stop()
             throw HotspotException("hotspot configuration unavailable")
         }
     }
+
+    private fun isLocationServiceOn(): Boolean {
+        val lm = context.getSystemService(android.location.LocationManager::class.java) ?: return false
+        return lm.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER) ||
+            lm.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER)
+    }
+
+    private fun securityMessage(): String =
+        if (Build.VERSION.SDK_INT >= 33) {
+            "دسترسی «دستگاه‌های نزدیک» داده نشده — دوباره تلاش کن و مجوز را تأیید کن"
+        } else {
+            "دسترسی موقعیت مکانی داده نشده — دوباره تلاش کن و مجوز را تأیید کن"
+        }
 
     fun stop() {
         runCatching { reservation?.close() }

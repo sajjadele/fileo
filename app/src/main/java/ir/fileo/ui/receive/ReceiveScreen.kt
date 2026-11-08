@@ -106,6 +106,34 @@ fun ReceiveScreen(onBack: () -> Unit) {
         }
     }
 
+    // ---- مجوزهای هات‌اسپات (اندروید ۱۳+: NEARBY_WIFI_DEVICES | اندروید ۹-۱۲: موقعیت مکانی) ----
+    var pendingHotspotAction by remember { mutableStateOf<(() -> Unit)?>(null) }
+    val hotspotPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { _ ->
+        val action = pendingHotspotAction
+        pendingHotspotAction = null
+        action?.invoke() // حتی بدون مجوز هم تلاش می‌کنیم — خطای گویا نمایش داده می‌شود
+    }
+
+    fun startHotspotWithPermissions() {
+        val needed = when {
+            Build.VERSION.SDK_INT >= 33 &&
+                ContextCompat.checkSelfPermission(context, Manifest.permission.NEARBY_WIFI_DEVICES) != PackageManager.PERMISSION_GRANTED ->
+                Manifest.permission.NEARBY_WIFI_DEVICES
+            Build.VERSION.SDK_INT in 29..32 &&
+                ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ->
+                Manifest.permission.ACCESS_FINE_LOCATION
+            else -> null
+        }
+        if (needed == null) {
+            viewModel.startHotspot()
+        } else {
+            pendingHotspotAction = { viewModel.startHotspot() }
+            hotspotPermissionLauncher.launch(needed)
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -187,7 +215,7 @@ fun ReceiveScreen(onBack: () -> Unit) {
                     }
                     Column(modifier = Modifier.weight(1f)) {
                         Button(
-                            onClick = { viewModel.startHotspot() },
+                            onClick = { startHotspotWithPermissions() },
                             modifier = Modifier.fillMaxWidth(),
                         ) {
                             Icon(
