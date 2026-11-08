@@ -96,6 +96,11 @@ class DiscoveryEngine(
         _state.value = DiscoveryState.Idle
     }
 
+    /** ارسال مستقیم اعلان به یک IP — probe هدفمند (IP داخل QR / گیت‌وی هات‌اسپات) */
+    fun sendDirectAnnounce(ip: String) {
+        udp?.sendDirectAnnounce(ip)
+    }
+
     private fun onDeviceSeen(device: DiscoveredDevice) {
         if (device.deviceId == selfDeviceId) return
         registry.upsert(device)

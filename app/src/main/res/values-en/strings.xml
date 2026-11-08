@@ -60,6 +60,14 @@
     <string name="connect_cancel">Cancel</string>
     <string name="connect_invalid_qr">This QR is not a Fileo code</string>
     <string name="connect_self_qr">This is this phone\'s own QR!</string>
+    <string name="connect_phase_network">Joining the other phone\'s network…</string>
+    <string name="connect_phase_searching">Looking for \"%1$s\"…</string>
+    <string name="connect_failed_title">Could not connect</string>
+    <string name="connect_failed_hint">The receiving phone must stay on the QR screen. Try again or use manual connection.</string>
+    <string name="connect_retry">Try again</string>
+
+    <string name="receive_pairing_qr_hint">When both phones are on the same Wi-Fi</string>
+    <string name="receive_hotspot_create_hint">No router — this phone creates the hotspot</string>
 
     <string name="receive_pairing_qr">Show QR</string>
     <string name="receive_hotspot_create">No Wi-Fi? Connect</string>

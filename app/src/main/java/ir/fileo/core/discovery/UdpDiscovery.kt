@@ -14,9 +14,10 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 
 /**
- * مکانیزم جایگزین کشف با UDP Broadcast — وقتی روتر mDNS را بلاک کرده باشد.
+ * مکانیزم جایگزین کشف با UDP — وقتی روتر mDNS را بلاک کرده باشد.
  * هر دستگاه هر ۲ ثانیه یک بستهٔ Announce پخش می‌کند و هم‌زمان گوش می‌دهد؛
- * پس هر دو طرف بدون نیاز به پاسخ، همدیگر را می‌بینند.
+ * به هر اعلان دریافتی هم با یک Announce تک‌پخشی پاسخ می‌دهد — پس حتی اگر
+ * broadcast بین دو دستگاه رد و بدل نشود، اتصال یک‌طرفه کافی است.
  */
 class UdpDiscovery(
     private val scope: CoroutineScope,
@@ -31,12 +32,23 @@ class UdpDiscovery(
     private var sendSocket: DatagramSocket? = null
     private var announcerJob: Job? = null
 
+    /** بستهٔ اعلان خودمان — یک‌بار ساخته و برای broadcast/unicast استفاده می‌شود */
+    private var announcePayload: ByteArray? = null
+
     @Volatile
     private var running = false
 
     fun start() {
         if (running) return
         running = true
+        announcePayload = DiscoveryCodec.encode(
+            AnnouncePacket(
+                deviceId = selfDeviceId,
+                deviceName = deviceName,
+                model = model,
+                tcpPort = tcpPort,
+            ),
+        ).toByteArray(Charsets.UTF_8)
         startListener()
         startAnnouncer()
     }
@@ -50,6 +62,19 @@ class UdpDiscovery(
         runCatching { sendSocket?.close() }
         listenSocket = null
         sendSocket = null
+    }
+
+    /**
+     * ارسال مستقیم اعلان به یک IP مشخص (unicast) — برای probe هدفمند،
+     * مثلاً IP داخل QR یا گیت‌وی هات‌اسپات، وقتی broadcast قابل اعتماد نیست.
+     */
+    fun sendDirectAnnounce(ip: String) {
+        val payload = announcePayload ?: return
+        val socket = sendSocket ?: return
+        runCatching {
+            val target = InetAddress.getByName(ip)
+            socket.send(DatagramPacket(payload, payload.size, target, DISCOVERY_PORT))
+        }
     }
 
     private fun startListener() {
@@ -96,6 +121,28 @@ class UdpDiscovery(
                 lastSeenMs = System.currentTimeMillis(),
             ),
         )
+
+        // پاسخ تک‌پخشی — تا همتا هم ما را پیدا کند (فقط به اعلان‌های غیرپاسخ، تا حلقه نشود)
+        if (!parsed.isReply) {
+            replyUnicast(packet.address, packet.port)
+        }
+    }
+
+    private fun replyUnicast(target: InetAddress?, port: Int) {
+        val payload = announcePayload ?: return
+        val reply = DiscoveryCodec.encode(
+            AnnouncePacket(
+                deviceId = selfDeviceId,
+                deviceName = deviceName,
+                model = model,
+                tcpPort = tcpPort,
+                isReply = true,
+            ),
+        ).toByteArray(Charsets.UTF_8)
+        val socket = sendSocket ?: return
+        runCatching {
+            socket.send(DatagramPacket(reply, reply.size, target, port))
+        }
     }
 
     private fun startAnnouncer() {
@@ -108,15 +155,7 @@ class UdpDiscovery(
             }
             sendSocket = socket
 
-            val payload = DiscoveryCodec.encode(
-                AnnouncePacket(
-                    deviceId = selfDeviceId,
-                    deviceName = deviceName,
-                    model = model,
-                    tcpPort = tcpPort,
-                ),
-            ).toByteArray(Charsets.UTF_8)
-
+            val payload = announcePayload ?: return@launch
             val target = runCatching { InetAddress.getByName(BROADCAST_ADDRESS) }.getOrNull()
                 ?: return@launch
 

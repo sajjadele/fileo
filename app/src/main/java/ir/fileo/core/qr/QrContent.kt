@@ -17,6 +17,8 @@ data class QrContent(
     /** SHA-256 گواهی TLS — نمایش کد اعتماد (تطبیق واقعی در فاز امنیتی بعدی) */
     val fingerprint: String,
     val hotspot: HotspotInfo?,
+    /** IP فعلی سازنده — برای اتصال مستقیم بدون وابستگی به discovery */
+    val ip: String? = null,
 ) {
     data class HotspotInfo(val ssid: String, val passphrase: String)
 
@@ -25,6 +27,7 @@ data class QrContent(
         append("&did=").append(b64url(deviceId))
         append("&name=").append(b64url(deviceName))
         append("&fp=").append(b64url(fingerprint))
+        ip?.let { append("&ip=").append(b64url(it)) }
         val hot = hotspot
         if (hot != null) {
             append("&hot=1")
@@ -55,6 +58,7 @@ data class QrContent(
             val deviceId = unb64(params["did"]) ?: return@runCatching null
             val deviceName = unb64(params["name"]) ?: return@runCatching null
             val fingerprint = unb64(params["fp"]) ?: return@runCatching null
+            val ip = params["ip"]?.let { unb64(it) }
 
             val hotspot = when (params["hot"]) {
                 "1" -> QrContent.HotspotInfo(
@@ -65,7 +69,7 @@ data class QrContent(
                 else -> return@runCatching null
             }
 
-            QrContent(deviceId, deviceName, fingerprint, hotspot)
+            QrContent(deviceId, deviceName, fingerprint, hotspot, ip)
         }.getOrNull()
 
         private fun b64url(value: String): String =

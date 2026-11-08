@@ -14,6 +14,8 @@ data class AnnouncePacket(
     val deviceName: String,
     val model: String,
     val tcpPort: Int,
+    /** پاسخ تک‌پخشی به یک اعلان دیگر — برای جلوگیری از حلقهٔ پینگ‌پنگ */
+    val isReply: Boolean = false,
 ) {
     companion object {
         const val PROTOCOL_VERSION = 1

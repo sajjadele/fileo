@@ -91,6 +91,8 @@ class ReceiveViewModel(
         deviceName = selfDeviceName,
         fingerprint = certManager.identity().certificateFingerprint().orEmpty(),
         hotspot = hotspot,
+        // IP فعلی — در حالت هات‌اسپات بعد از بالا آمدن AP خوانده می‌شود
+        ip = ir.fileo.core.net.NetworkUtils.findLocalIpv4(),
     )
 
     companion object {

@@ -166,29 +166,43 @@ fun ReceiveScreen(onBack: () -> Unit) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    OutlinedButton(
-                        onClick = { viewModel.showPairingQr() },
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.QrCode2,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
+                    Column(modifier = Modifier.weight(1f)) {
+                        OutlinedButton(
+                            onClick = { viewModel.showPairingQr() },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.QrCode2,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Spacer(modifier = Modifier.size(6.dp))
+                            Text(stringResource(R.string.receive_pairing_qr))
+                        }
+                        Text(
+                            text = stringResource(R.string.receive_pairing_qr_hint),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
-                        Spacer(modifier = Modifier.size(6.dp))
-                        Text(stringResource(R.string.receive_pairing_qr))
                     }
-                    Button(
-                        onClick = { viewModel.startHotspot() },
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.WifiTethering,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
+                    Column(modifier = Modifier.weight(1f)) {
+                        Button(
+                            onClick = { viewModel.startHotspot() },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.WifiTethering,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Spacer(modifier = Modifier.size(6.dp))
+                            Text(stringResource(R.string.receive_hotspot_create))
+                        }
+                        Text(
+                            text = stringResource(R.string.receive_hotspot_create_hint),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
-                        Spacer(modifier = Modifier.size(6.dp))
-                        Text(stringResource(R.string.receive_hotspot_create))
                     }
                 }
             }

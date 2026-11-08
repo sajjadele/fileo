@@ -60,6 +60,14 @@
     <string name="connect_cancel">انصراف</string>
     <string name="connect_invalid_qr">این QR مال فایلو نیست</string>
     <string name="connect_self_qr">این QR همین گوشی است!</string>
+    <string name="connect_phase_network">در حال وصل شدن به شبکهٔ گوشی مقابل…</string>
+    <string name="connect_phase_searching">جستجوی «%1$s»…</string>
+    <string name="connect_failed_title">اتصال برقرار نشد</string>
+    <string name="connect_failed_hint">گوشی گیرنده باید روی صفحهٔ QR بماند. دوباره تلاش کن یا اتصال دستی را امتحان کن.</string>
+    <string name="connect_retry">تلاش دوباره</string>
+
+    <string name="receive_pairing_qr_hint">وقتی هر دو گوشی به یک وای‌فای وصل‌اند</string>
+    <string name="receive_hotspot_create_hint">بدون روتر — این گوشی هات‌اسپات می‌سازد</string>
 
     <string name="receive_pairing_qr">نمایش QR</string>
     <string name="receive_hotspot_create">اتصال بدون وای‌فای</string>

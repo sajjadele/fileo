@@ -166,10 +166,9 @@ fun SendScreen(onBack: () -> Unit) {
                 // اتصال از طریق QR در جریان است؟
                 connectionAttempt?.let { attempt ->
                     ConnectionAttemptCard(
-                        deviceName = attempt.deviceName,
-                        ssid = attempt.hotspot?.ssid,
-                        passphrase = attempt.hotspot?.passphrase,
+                        attempt = attempt,
                         onCancel = { viewModel.cancelConnectionAttempt() },
+                        onRetry = { viewModel.retryConnectionAttempt() },
                         onCopy = { value ->
                             copyToClipboard(context, value)
                             scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.connect_copied)) }
@@ -214,13 +213,15 @@ private fun android.net.Uri.byteSize(context: Context): Long = runCatching {
 
 @Composable
 private fun ConnectionAttemptCard(
-    deviceName: String,
-    ssid: String?,
-    passphrase: String?,
+    attempt: ir.fileo.ui.send.ConnectionAttempt,
     onCancel: () -> Unit,
+    onRetry: () -> Unit,
     onCopy: (String) -> Unit,
 ) {
     val context = LocalContext.current
+    val qr = attempt.qr
+    val failed = attempt.phase == ConnectPhase.FAILED
+
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier
@@ -233,12 +234,36 @@ private fun ConnectionAttemptCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
-                Text(
-                    text = stringResource(R.string.connect_waiting_for, deviceName),
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.weight(1f),
-                )
+                if (failed) {
+                    Icon(
+                        imageVector = Icons.Outlined.WifiOff,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                    )
+                } else {
+                    CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = when (attempt.phase) {
+                            ConnectPhase.CONNECTING_NETWORK ->
+                                stringResource(R.string.connect_phase_network)
+                            ConnectPhase.SEARCHING ->
+                                stringResource(R.string.connect_phase_searching, qr.deviceName)
+                            ConnectPhase.FAILED ->
+                                stringResource(R.string.connect_failed_title)
+                        },
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    if (failed) {
+                        Text(
+                            text = stringResource(R.string.connect_failed_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
                 IconButton(onClick = onCancel) {
                     Icon(
                         imageVector = Icons.Outlined.Close,
@@ -247,7 +272,15 @@ private fun ConnectionAttemptCard(
                 }
             }
 
+            if (failed) {
+                Button(onClick = onRetry) {
+                    Text(stringResource(R.string.connect_retry))
+                }
+            }
+
             // اگر QR شامل هات‌اسپات است — مسیر اتصال دستی هم در دسترس باشد
+            val ssid = qr.hotspot?.ssid
+            val passphrase = qr.hotspot?.passphrase
             if (ssid != null && passphrase != null) {
                 HorizontalDivider()
                 Text(
