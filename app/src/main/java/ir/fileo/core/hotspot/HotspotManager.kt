@@ -37,8 +37,8 @@ class HotspotManager(private val context: Context) {
         val wifi = context.getSystemService(WifiManager::class.java)
             ?: throw HotspotException("Wi-Fi service unavailable")
 
-        val newReservation = try {
-            suspendCancellableCoroutine { continuation ->
+        val newReservation: WifiManager.LocalOnlyHotspotReservation = try {
+            suspendCancellableCoroutine<WifiManager.LocalOnlyHotspotReservation> { continuation ->
                 wifi.startLocalOnlyHotspot(
                     object : WifiManager.LocalOnlyHotspotCallback() {
                         override fun onStarted(res: WifiManager.LocalOnlyHotspotReservation) {
